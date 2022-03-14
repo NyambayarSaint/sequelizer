@@ -13,7 +13,9 @@ const storage = multer.diskStorage({
 
     module.exports = (router) => {
 
-        router.post('/', multer({ storage }).array('photos'), uploadControllers.upload)
+        router.post('/', multer({ storage }).array('images'), uploadControllers.upload)
+        router.post('/images', uploadControllers.images)
+        router.post('/delete', uploadControllers.delete)
 
         return router
 

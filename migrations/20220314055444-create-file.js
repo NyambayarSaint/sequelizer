@@ -23,6 +23,12 @@ module.exports = {
       originalname: {
         type: Sequelize.STRING
       },
+      type: {
+        type: Sequelize.STRING
+      },
+      systemPath: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
