@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.Newstype)
+      this.belongsToMany(models.File, { through: 'MediaNewsImagesJunction', as: 'images' })
     }
   }
   News.init({
@@ -22,7 +24,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     description: DataTypes.STRING,
-    image: DataTypes.STRING
+    slug: DataTypes.STRING,
+    public: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'News',

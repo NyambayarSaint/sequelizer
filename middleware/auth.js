@@ -41,6 +41,7 @@ exports.adminAuth = async (req, res, next) => {
     try {
         const decodedCookie = decodeURIComponent(req.headers.authorization)
         if(!decodedCookie) throw 'no auth token cookie in header'
+        console.log(decodedCookie, '??')
         const start = decodedCookie.indexOf('Bearer ')
         const token = decodedCookie.slice(start+7, decodedCookie.length)
         const decoded = jwt.verify(token, JWTSECRET)

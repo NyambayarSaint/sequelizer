@@ -14,8 +14,11 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      image: {
+      slug: {
         type: Sequelize.STRING
+      },
+      public: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,

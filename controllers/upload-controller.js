@@ -6,7 +6,8 @@ const { Op } = require('../models')
 exports.upload = async (req, res) => {
     try {
         const images = req.files;
-        if (!images) throw 'No images selected!'
+        if (!images || !images.length) throw 'No images selected!'
+        console.log(images, '??')
         const uploadedImages = await Promise.all(images.map(async image => {
             return await File.create({
                 name: image.filename,
@@ -29,6 +30,21 @@ exports.upload = async (req, res) => {
     }
 }
 
+exports.edit = async (req, res) => {
+    try{
+        const { id, originalname } = req.body
+
+        if(!id) throw 'No id specified!'
+        const foundImage = await File.findOne({ where: { id } })
+        if(!foundImage) throw 'No such image'
+        foundImage.originalname = originalname
+        await foundImage.save()
+        res.status(200).json({ message: 'success' })
+    } catch(e) {
+        res.status(500).json({ error: e })
+    }
+}
+
 exports.delete = async (req, res) => {
     try{
         const { images } = req.body
@@ -36,11 +52,12 @@ exports.delete = async (req, res) => {
         await Promise.all(images.map(async id => {
             const foundImage = await File.findOne({ where: { id } })
             if(!foundImage) throw 'No such image'
-            fs.unlinkSync(foundImage.url)
+            fs.unlinkSync('public/'+foundImage.url)
             await foundImage.destroy()
         }))
         res.status(200).json({ message: 'Successfully deleted images' });
     } catch(e) {
+        console.log('delete image catch', e)
         res.status(500).json({ error: e })
     }
 }
@@ -52,11 +69,11 @@ exports.images = async (req, res) => {
         if(!name) name = '';
         let images = []
         if(name) {
-            images = await File.findAll({ ...pagination, where: { type: 'image', originalname: { [Op.like]: '%' + name + '%' } } });
+            images = await File.findAll({ ...pagination, order: [ ['updatedAt', 'DESC'] ], where: { type: 'image', originalname: { [Op.like]: '%' + name + '%' } } });
         } else {
-            images = await File.findAll({ ...pagination, where: { type: 'image' } });
+            images = await File.findAll({ ...pagination, order: [ ['updatedAt', 'DESC'] ], where: { type: 'image' } });
         }
-        res.status(200).json({ data: images })
+        res.status(200).json(images)
     } catch(e){
         res.status(500).json({ error: e })
     }
