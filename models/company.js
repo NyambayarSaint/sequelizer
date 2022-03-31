@@ -11,14 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsTo(models.File)
+      this.belongsTo(models.Jobposting)
+      this.hasMany(models.Department)
     }
   }
   Company.init({
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      unique: true
     },
     name: DataTypes.STRING
   }, {

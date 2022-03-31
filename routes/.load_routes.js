@@ -5,6 +5,7 @@ module.exports = async (app) => {
     require("fs")
         .readdirSync(__dirname)
         .forEach((file) => {
+            console.log(file, 'loaded route')
             if (file === ".load_routes.js") return;
             const router = express.Router();
             const routeModule = require(require("path").join(__dirname, file));

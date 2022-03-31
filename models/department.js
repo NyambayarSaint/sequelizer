@@ -11,16 +11,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasMany(models.User)
+      this.belongsTo(models.Company)
     }
   }
   Department.init({
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      unique: true
     },
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    depid: DataTypes.STRING,
+    depcode: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Department',

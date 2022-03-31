@@ -13,6 +13,9 @@ module.exports = {
         unique: true,
         allowNull: false
       },
+      description: {
+        type: Sequelize.STRING
+      },
       isDefault: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

@@ -2,6 +2,7 @@ const sharp = require('sharp')
 const { File } = require('../models')
 const fs = require('fs')
 const { Op } = require('../models')
+const { imageMimetypes } = require('../utils/upload-config')
 
 exports.upload = async (req, res) => {
     try {
@@ -9,15 +10,17 @@ exports.upload = async (req, res) => {
         if (!images || !images.length) throw 'No images selected!'
         console.log(images, '??')
         const uploadedImages = await Promise.all(images.map(async image => {
-            return await File.create({
+            const fileBody = {
                 name: image.filename,
                 ext: image.mimetype,
                 size: image.size,
                 systemPath: image.path,
                 url: '/uploads/' + image.filename,
                 originalname: image.originalname,
-                type: 'image'
-            })
+                type: 'other'
+            }
+            if(imageMimetypes.includes(image.mimetype)) fileBody.type = 'image'
+            return await File.create(fileBody)
         }))
 
         // send response

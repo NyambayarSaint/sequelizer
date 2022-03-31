@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsToMany(models.News, { through: 'MediaNewsImagesJunction'})
+      this.belongsToMany(models.Album, { through: 'MediaAlbumImagesJunction'})
+      this.belongsToMany(models.Material, { through: 'MediaMaterialImagesJunction'})
+      this.hasMany(models.Company)
+      this.hasMany(models.User)
+      this.hasMany(models.Admin)
     }
   }
   File.init({

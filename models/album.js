@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Job extends Model {
+  class Album extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,21 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.belongsToMany(models.File, { through: 'MediaAlbumImagesJunction', as: 'images'})
     }
   }
-  Job.init({
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      primaryKey: true
-    },
-    title: DataTypes.STRING,
-    description: DataTypes.STRING,
-    logo: DataTypes.STRING
+  Album.init({
+    name: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Job',
+    modelName: 'Album',
   });
-  return Job;
+  return Album;
 };

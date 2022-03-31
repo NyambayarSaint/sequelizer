@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // this.belongsToMany(models.AdminRole, {through: 'AdminRolesJunction'})
             this.belongsTo(models.AdminRole)
+            this.belongsTo(models.File)
         }
         static async findByCredentials(username, password) {
             const admin = await Admin.findOne({ where: { username } }).catch(err => console.log('findByCredeintials - find admin', err))

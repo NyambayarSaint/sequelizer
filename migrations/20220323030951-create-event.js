@@ -12,12 +12,15 @@ module.exports = {
         type: Sequelize.STRING
       },
       description: {
+        type: Sequelize.TEXT
+      },
+      color: {
         type: Sequelize.STRING
       },
-      date_start: {
+      start_date: {
         type: Sequelize.DATE
       },
-      date_end: {
+      end_date: {
         type: Sequelize.DATE
       },
       createdAt: {
