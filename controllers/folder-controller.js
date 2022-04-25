@@ -1,72 +1,66 @@
-const { News, Company } = require("../models")
+const { Folder, Company, Department } = require("../models")
 const { updateHelper, fillQueryParams } = require("../utils/micro-functions")
 
-exports.getNews = async (req, res) => {
-    try {
-        const { id: type } = req.params
-        let newsToSend
-        if(Number(type) === 1) newsToSend = await News.findAll({ include: [ { model: Company, where: { id: "TBG" } }]})
-        if(Number(type) === 2) {
-            const depInstance = await req.user.getDepartment({ include: "Company" })
-            newsToSend = await News.findAll({ include: [{ model: Company, where: {id: depInstance.Company.id} }] })
-        }
-        res.status(200).json(newsToSend)
-    } catch (e) {
-        console.log('getNews', e)
-        res.status(500).json({ error: e })
-    }
-}
-
 exports.count = async (req, res) => {
-    try{
-        const filledParams = fillQueryParams(req.query)
-        if(req.query.type) filledParams.operations.NewstypeId = Number(req.query.type)
-        const allInstances = await News.findAll({
-            ...filledParams.params,
-            where: {
-                ...filledParams.operations
-            }
-        })
+    try {
+        const allInstances = await Folder.findAll()
         res.status(200).json(allInstances.length)
-    } catch(e) {
-        console.error('countNews', e.message)
+    } catch (e) {
         res.status(500).json({ error: e })
     }
 }
 
 exports.findOne = async (req, res) => {
-    try{
+    try {
         const { id } = req.params
 
-        const foundInstance = await News.findOne({
+        const foundInstance = await Folder.findOne({
             where: { id },
-            include: ["images", "Newstype"]
+            include: ["Company", "Department"]
         })
-        if(!foundInstance) throw 'no such News'
+        if (!foundInstance) throw 'no such Folder'
 
         res.status(200).json(foundInstance)
-    } catch(e){
-        console.log('get News catch', e)
+    } catch (e) {
+        console.log('get Folder catch', e)
+        res.status(500).json({ error: e })
+    }
+}
+
+exports.getFolders = async (req, res) => {
+    try {
+        const { id: type } = req.params
+        let foldersToSend
+        if(Number(type) === 1) foldersToSend = await Folder.findAll({ include: [ { model: Company, where: { id: "TBG" } }]})
+        if(Number(type) === 2) {
+            const compInstance = await req.user.getCompany()
+            foldersToSend = await Folder.findAll({ include: [{ model: Company, where: {id: compInstance.id} }] })
+        }
+        // if(Number(type) === 3){
+        //     const depInstance = await req.user.getDepartment()
+        //     foldersToSend = await Folder.findAll({ include: [{ model: Department, where: {id: depInstance.id} }] })
+        // }
+        res.status(200).json(foldersToSend)
+    } catch (e) {
+        console.log('getFolders', e)
         res.status(500).json({ error: e })
     }
 }
 
 exports.find = async (req, res) => {
-    try{
+    try {
         const filledParams = fillQueryParams(req.query)
-        const params = req.query
-        if(params.type) filledParams.operations.NewstypeId = Number(params.type)
-        console.log(filledParams.operations, 'haha')
-        const allInstances = await News.findAll({
+
+        const allInstances = await Folder.findAll({
             ...filledParams.params,
             where: {
                 ...filledParams.operations
             },
-            include: ["images", "Newstype"]
+            include: ["Company", "Department"]
         })
         res.status(200).json(allInstances)
-    } catch(e) {
-        console.log('getAll News catch', e)
+    } catch (e) {
+        console.log('getAll Folder catch', e)
         res.status(500).json({ error: e })
     }
 }
@@ -74,10 +68,9 @@ exports.find = async (req, res) => {
 exports.create = async (req, res) => {
     try {
         const params = { ...req.body }
-        const createdInstance = await News.create(params)
+        const createdInstance = await Folder.create(params)
 
         //relation settings
-        if (params.images) await createdInstance.setImages(params.images)
         if (params.type === 1) { // SET GROUP COMPANY
             const headCompany = await Company.findOne({ where: { id: "TBG" } })
             await createdInstance.setCompany(headCompany.id)
@@ -86,14 +79,19 @@ exports.create = async (req, res) => {
             const depInstance = await req.user.getDepartment({ include: "Company" })
             await createdInstance.setCompany(depInstance.Company.id)
         }
-        const sendData = await News.findOne({
+        if (params.type === 3) { // SET DEPARTMENT
+            const depInstance = await req.user.getDepartment()
+            await createdInstance.setDepartment(depInstance.id)
+        }
+        // if (params.files) await createdInstance.setFiles(params.files)
+        const sendData = await Folder.findOne({
             where: { id: createdInstance.id },
-            include: ["images"]
+            include: ["Company", "Department"]
         })
 
         res.status(200).json(sendData)
     } catch (e) {
-        console.log('create News catch', e)
+        console.log('create Folder catch', e)
         res.status(500).json({ error: e })
     }
 }
@@ -103,14 +101,13 @@ exports.update = async (req, res) => {
         const params = { ...req.body }
         const { id } = req.params
 
-        const foundInstance = await News.findOne({ where: { id } })
-        if(!foundInstance) throw 'No such News'
+        const foundInstance = await Folder.findOne({ where: { id } })
+        if (!foundInstance) throw 'No such Folder'
 
         const updatedInstance = updateHelper(foundInstance, params, [])
         await updatedInstance.save()
 
         //relation settings
-        if(params.images) await updatedInstance.setImages(params.images)
         if (params.type === 1) { // SET GROUP COMPANY
             const headCompany = await Company.findOne({ where: { id: "TBG" } })
             await foundInstance.setCompany(headCompany.id)
@@ -119,30 +116,35 @@ exports.update = async (req, res) => {
             const depInstance = await req.user.getDepartment({ include: "Company" })
             await foundInstance.setCompany(depInstance.Company.id)
         }
-        const sendData = await News.findOne({
+        if (params.type === 3) { // SET DEPARTMENT
+            const depInstance = await req.user.getDepartment()
+            await foundInstance.setDepartment(depInstance.id)
+        }
+        
+        const sendData = await Folder.findOne({
             where: { id: foundInstance.id },
-            include: ["images"]
+            include: ["Company", "Department"]
         })
 
         res.status(200).json(sendData)
     } catch (e) {
-        console.log('update News catch', e)
+        console.log('update Folder catch', e)
         res.status(500).json({ error: e })
     }
 }
 
 exports.delete = async (req, res) => {
-    try{
+    try {
         const { id } = req.params
 
-        const foundInstance = await News.findOne({ where: { id } })
-        if(!foundInstance) throw 'no such News'
+        const foundInstance = await Folder.findOne({ where: { id } })
+        if (!foundInstance) throw 'no such Folder'
 
         await foundInstance.destroy()
 
         res.status(200).json({ message: 'successfully deleted!' })
-    } catch(e) {
-        console.log('delete News catch', e)
+    } catch (e) {
+        console.log('delete Folder catch', e)
         res.status(500).json({ error: e })
     }
 }

@@ -1,4 +1,4 @@
-const { File } = require("../models")
+const { File, sequelize } = require("../models")
 const { Op } = require('../models')
 
 exports.updateHelper = (instance, params, skipArr = []) => {
@@ -42,7 +42,10 @@ exports.fillQueryParams = (queryParams) => {
         const splitted = filters.split(',');
         splitted.map(splittedInstance => {
             const seperated = splittedInstance.split(':')
-            operations[seperated[0]] = { [Op.like]: '%' + seperated[1] + '%' }
+            const asset_name = seperated[0]
+            const asset_value = seperated[1].toString().toLowerCase()
+            // operations[asset_name] = { [Op.like]: '%' + asset_value + '%' }
+            operations[asset_name] = sequelize.where(sequelize.fn('LOWER', sequelize.col(asset_name)), 'LIKE', '%' + asset_value + '%')
         })
     }
     return {

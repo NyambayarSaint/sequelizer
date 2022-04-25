@@ -17,6 +17,15 @@ module.exports = {
       depcode: {
         type: Sequelize.STRING
       },
+      order: {
+        type: Sequelize.FLOAT,
+        defaultValue: 10,
+        allowNull: false
+      },
+      order: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

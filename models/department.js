@@ -12,7 +12,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.hasMany(models.User)
+      this.hasMany(models.Folder)
+      this.hasMany(models.Admin)
+
       this.belongsTo(models.Company)
+
+      this.hasMany(models.Sector)
+      this.hasMany(models.Unit)
     }
   }
   Department.init({
@@ -25,6 +31,15 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     depid: DataTypes.STRING,
     depcode: DataTypes.STRING,
+    order: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 10
+    },
+    isShow: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   }, {
     sequelize,
     modelName: 'Department',

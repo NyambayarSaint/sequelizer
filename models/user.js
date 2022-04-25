@@ -1,6 +1,5 @@
 'use strict';
 const { Model } = require('sequelize');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { default: axios } = require('axios');
 const JWTSECRET = process.env.JWTSECRET;
@@ -17,32 +16,33 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.UserRole)
             this.belongsTo(models.File)
             this.belongsToMany(models.Event, { through: 'UserEventJunction' })
+
+            this.belongsTo(models.Company)
             this.belongsTo(models.Department)
+            this.belongsTo(models.Sector)
+            this.belongsTo(models.Unit)
+
+            this.hasMany(models.Post)
         }
         static async findByCredentials(username, password) {
-            const base = "http://192.168.10.11:8082"
-            const [companyid, userid] = username.split('\\')
-            const {data: {access_token: access_token}} = await axios.post(base+'/api/auth-service/login', {
-                userid,
-                password,
-                companyid,
-                ipaddress: "string",
-                macaddress: "string"
-            })
-            const headers = { 'Authorization': 'Bearer ' + access_token }
-            const { userID, EmpID, CompanyID, DepID, positionID } = jwt.decode(access_token)
-            const {data: {retdata: detail}} = await axios(`${base}/api/hrms/hr/employee/get?EmployeeID=${EmpID}`, {headers})
-            console.log(detail, 'detail')
-
-            // const user = await User.findOne({ where: { username } }).catch(err => console.log('findByCredeintials - find user', err))
-            // if(!user) throw new Error("There's no such user")
-            // const passwordMatch = await bcrypt.compare(password, user.password)
-            // if(!passwordMatch) throw new Error("Password is wrong!");
-            // return user
+            try {
+                const base = "http://192.168.10.11:8082"
+                console.log(username, password, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                const [companyid, userid] = username.split('\\')
+                const { data: { access_token: access_token } } = await axios.post(base + '/api/auth-service/login', { userid, password, companyid, ipaddress: "string", macaddress: "string" })
+                const { userID, EmpID, CompanyID, DepID, positionID } = jwt.decode(access_token)
+                const foundUserToSend = await User.findOne({ where: { id: Number(EmpID) } })
+                console.log(foundUserToSend, 'foundusertosend')
+                if(!foundUserToSend) return { error: false, loadNewUsers: true, credentials: { userid, password, companyid, ipaddress: "string", macaddress: "string" }, EmpID }
+                return { user: foundUserToSend, error: false }
+            } catch(e) {
+                console.log('findByCredentials catch', e)
+                return { error: true, errorDetails: e }
+            }
         }
         async generateAuthToken() {
             const user = this;
-            const token = jwt.sign({ id: user.id.toString() }, JWTSECRET);
+            const token = jwt.sign({ id: user.id.toString(), user: true }, JWTSECRET);
             user.tokens = user.tokens ? user.tokens.concat({ token }) : [{ token }]
             await user.save()
             return token
@@ -60,24 +60,28 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true,
             unique: true
-          },
-        email: DataTypes.STRING,
-        password: DataTypes.STRING,
-        firstname: DataTypes.STRING,
-        lastname: DataTypes.STRING,
-        title: DataTypes.STRING,
-        birthday: DataTypes.DATE,
-        birthplace: DataTypes.STRING,
-        sex: DataTypes.STRING,
-        education: DataTypes.STRING,
-        phone: DataTypes.INTEGER,
+        },
+        greenjwt: DataTypes.TEXT,
+        slogan: DataTypes.STRING,
         hobby: DataTypes.STRING,
-        employeed_at: DataTypes.DATE,
-        description: DataTypes.STRING,
-        code: DataTypes.STRING,
-        fullname: DataTypes.STRING,
-        posname: DataTypes.STRING,
-        initialized: DataTypes.BOOLEAN,
+        reward: DataTypes.STRING,
+        firstname: DataTypes.STRING,
+        firstname_enus: DataTypes.STRING,
+        mobilephone: DataTypes.STRING,
+        order: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+            defaultValue: 10
+        },
+        details: {
+            type: DataTypes.TEXT,
+            get: function () {
+                return JSON.parse(this.getDataValue('details'));
+            },
+            set: function (val) {
+                return this.setDataValue('details', JSON.stringify(val))
+            }
+        },
         tokens: {
             type: DataTypes.TEXT,
             get: function () {

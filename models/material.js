@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.File, { through: 'MediaMaterialImagesJunction', as: 'documents' })
+      this.belongsToMany(models.File, { through: 'MediaMaterialImagesJunction', as: 'files' })
+      this.belongsTo(models.Folder)
     }
   }
   Material.init({

@@ -1,5 +1,5 @@
 const sharp = require('sharp')
-const { File } = require('../models')
+const { File, Admin, User } = require('../models')
 const fs = require('fs')
 const { Op } = require('../models')
 const { imageMimetypes } = require('../utils/upload-config')
@@ -8,7 +8,6 @@ exports.upload = async (req, res) => {
     try {
         const images = req.files;
         if (!images || !images.length) throw 'No images selected!'
-        console.log(images, '??')
         const uploadedImages = await Promise.all(images.map(async image => {
             const fileBody = {
                 name: image.filename,
@@ -17,7 +16,8 @@ exports.upload = async (req, res) => {
                 systemPath: image.path,
                 url: '/uploads/' + image.filename,
                 originalname: image.originalname,
-                type: 'other'
+                type: 'other',
+                createdBy: req.user.id.toString()
             }
             if(imageMimetypes.includes(image.mimetype)) fileBody.type = 'image'
             return await File.create(fileBody)
@@ -67,17 +67,23 @@ exports.delete = async (req, res) => {
 
 exports.images = async (req, res) => {
     try{
-        const { pagination } = req.body
-        let { name } = req.body
-        if(!name) name = '';
-        let images = []
-        if(name) {
-            images = await File.findAll({ ...pagination, order: [ ['updatedAt', 'DESC'] ], where: { type: 'image', originalname: { [Op.like]: '%' + name + '%' } } });
-        } else {
-            images = await File.findAll({ ...pagination, order: [ ['updatedAt', 'DESC'] ], where: { type: 'image' } });
-        }
+        const { pagination, name } = req.body
+        const search = {}
+        let user = { createdBy: req.user.id.toString() }
+
+        if(name) search.originalname = { [Op.like]: '%' + name + '%' }
+        if(req.type === "admin") if(req.user.AdminRole.isSuper) user = {}
+        const images = await File.findAll({
+            ...pagination,
+            order: [ ['updatedAt', 'DESC'] ],
+            where: {
+                ...search,
+                ...user
+            }
+        });
         res.status(200).json(images)
     } catch(e){
+        console.log('images get??', e)
         res.status(500).json({ error: e })
     }
 }

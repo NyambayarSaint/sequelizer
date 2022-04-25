@@ -3,9 +3,11 @@ const { auth } = require('../middleware/auth')
 
 module.exports = (router) => {
 
+    router.get('/birthdays', userController.getBirthdays)
     router.get('/count', userController.count)
     router.get('/', userController.find)
     router.get('/me', auth, userController.me)
+    router.post('/search', userController.search)
     router.post('/create', userController.create)
     router.post('/signin', userController.signin)
     router.get('/:id', userController.findOne)

@@ -5,11 +5,11 @@ module.exports = {
       key: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
         primaryKey: true
       },
       method: {
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false
       },
       description: {

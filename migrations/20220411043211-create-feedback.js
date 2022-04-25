@@ -1,36 +1,18 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Files', {
+    await queryInterface.createTable('Feedbacks', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
         primaryKey: true
       },
-      name: {
+      title: {
         type: Sequelize.STRING
       },
-      ext: {
+      description: {
         type: Sequelize.STRING
-      },
-      size: {
-        type: Sequelize.INTEGER
-      },
-      url: {
-        type: Sequelize.STRING
-      },
-      originalname: {
-        type: Sequelize.STRING
-      },
-      type: {
-        type: Sequelize.STRING
-      },
-      systemPath: {
-        type: Sequelize.STRING
-      },
-      createdBy: {
-        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
@@ -43,6 +25,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Files');
+    await queryInterface.dropTable('Feedbacks');
   }
 };

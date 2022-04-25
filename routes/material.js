@@ -3,6 +3,7 @@ const { auth } = require("../middleware/auth")
 
 module.exports = (router) => {
 
+    router.get('/folder/:id', materialController.getMaterialsByFolderId)
     router.get('/count', materialController.count)
     router.get('/', materialController.find)
     router.post('/', materialController.create)

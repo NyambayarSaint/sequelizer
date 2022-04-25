@@ -11,16 +11,33 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasMany(models.User)
+
+      this.belongsTo(models.Company)
+      this.belongsTo(models.Department)
+
+      this.hasMany(models.Unit)
     }
   }
   Sector.init({
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      unique: true
     },
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    depid: DataTypes.STRING,
+    depcode: DataTypes.STRING,
+    order: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 10
+    },
+    isShow: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   }, {
     sequelize,
     modelName: 'Sector',

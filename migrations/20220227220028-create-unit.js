@@ -1,36 +1,30 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Files', {
+    await queryInterface.createTable('Units', {
       id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
+        type: Sequelize.STRING,
+        unique: true
       },
       name: {
         type: Sequelize.STRING
       },
-      ext: {
+      depid: {
         type: Sequelize.STRING
       },
-      size: {
-        type: Sequelize.INTEGER
-      },
-      url: {
+      depcode: {
         type: Sequelize.STRING
       },
-      originalname: {
-        type: Sequelize.STRING
+      order: {
+        type: Sequelize.FLOAT,
+        defaultValue: 10,
+        allowNull: false
       },
-      type: {
-        type: Sequelize.STRING
-      },
-      systemPath: {
-        type: Sequelize.STRING
-      },
-      createdBy: {
-        type: Sequelize.TEXT
+      order: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
       },
       createdAt: {
         allowNull: false,
@@ -43,6 +37,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Files');
+    await queryInterface.dropTable('Units');
   }
 };

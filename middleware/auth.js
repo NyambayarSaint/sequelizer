@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const { User } = require('../models')
-const { Admin } = require('../models')
+const { Admin, AdminRole, UserRole, Permission } = require('../models')
 const JWTSECRET = process.env.JWTSECRET
 
 exports.auth = async (req, res, next) => {
@@ -14,22 +14,19 @@ exports.auth = async (req, res, next) => {
 
         let foundUser
         let type = ''
-        const isAdmin = await Admin.findOne({ where: { id: decoded.id } })
-        const isUser = await User.findOne({ where: { id: decoded.id } })
-        
-        if(isAdmin) {
-            foundUser = isAdmin
-            type = 'admin'
-        }
-        if(isUser) {
-            foundUser = isUser
+
+        if(decoded.user) {
             type = 'user'
+            foundUser = await User.findOne({ where: { id: Number(decoded.id) }, include: [{ model: UserRole, include: [Permission] }] })
+        }
+        else {
+            type = 'admin'
+            foundUser = await Admin.findOne({ where: { id: decoded.id }, include: [{ model: AdminRole, include: [Permission] }] })
         }
 
         if (!foundUser) {
             throw new Error('No user found!');
         }
-
         req.token = token
         req.user = foundUser
         req.type = type

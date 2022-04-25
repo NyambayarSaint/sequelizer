@@ -14,66 +14,40 @@ module.exports = {
         type: Sequelize.INTEGER,
         unique: true
       },
-      email: {
+      slogan: {
         type: Sequelize.STRING
-      },
-      password: {
-        type: Sequelize.STRING
-      },
-      firstname: {
-        type: Sequelize.STRING
-      },
-      lastname: {
-        type: Sequelize.STRING
-      },
-      title: {
-        type: Sequelize.STRING
-      },
-      birthday: {
-        type: Sequelize.DATE
-      },
-      birthplace: {
-        type: Sequelize.STRING
-      },
-      sex: {
-        type: Sequelize.STRING
-      },
-      education: {
-        type: Sequelize.STRING
-      },
-      phone: {
-        type: Sequelize.INTEGER
       },
       hobby: {
         type: Sequelize.STRING
       },
-      employeed_at: {
-        type: Sequelize.DATE
-      },
-      description: {
+      reward: {
         type: Sequelize.STRING
       },
-      code: {
+      greenjwt: {
+        type: Sequelize.TEXT
+      },
+      order: {
+        type: Sequelize.FLOAT,
+        defaultValue: 10,
+        allowNull: false
+      },
+      firstname: {
         type: Sequelize.STRING
       },
-      fullname: {
+      firstname_enus: {
         type: Sequelize.STRING
       },
-      posname: {
+      mobilephone: {
         type: Sequelize.STRING
       },
-      initialized: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      details: {
+        type: Sequelize.TEXT,
+        get: function () {
+          return JSON.parse(this.getDataValue('details'));
+        },
+        set: function (val) {
+          return this.setDataValue('details', JSON.stringify(val))
+        }
       },
       tokens: {
         type: Sequelize.TEXT,
@@ -83,6 +57,14 @@ module.exports = {
         set: function (val) {
           return this.setDataValue('tokens', JSON.stringify(val))
         }
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
   },

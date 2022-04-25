@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Event extends Model {
+  class Unit extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,26 +11,35 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.User, { through: 'UserEventJunction', as: 'users' })
+      this.hasMany(models.User)
+
       this.belongsTo(models.Company)
+      this.belongsTo(models.Department)
+      this.belongsTo(models.Sector)
     }
   }
-  Event.init({
+  Unit.init({
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      unique: true
     },
     name: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    color: DataTypes.STRING,
-    start_date: DataTypes.DATE,
-    end_date: DataTypes.DATE
+    depid: DataTypes.STRING,
+    depcode: DataTypes.STRING,
+    order: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 10
+    },
+    isShow: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   }, {
     sequelize,
-    modelName: 'Event',
+    modelName: 'Unit',
   });
-  return Event;
+  return Unit;
 };

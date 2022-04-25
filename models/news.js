@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const slugify = require('slugify')
 module.exports = (sequelize, DataTypes) => {
   class News extends Model {
     /**
@@ -12,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.Newstype)
+      this.belongsTo(models.Company)
       this.belongsToMany(models.File, { through: 'MediaNewsImagesJunction', as: 'images' })
     }
   }
@@ -23,12 +25,20 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     title: DataTypes.STRING,
-    description: DataTypes.STRING,
+    description: DataTypes.TEXT,
     slug: DataTypes.STRING,
-    public: DataTypes.BOOLEAN
+    type: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'News',
+    hooks: {
+      beforeCreate: async (news, options) => {
+        news.slug = slugify(news.title)
+      },
+      beforeUpdate: async (news, options) => {
+        news.slug = slugify(news.title)
+      }
+    }
   });
   return News;
 };

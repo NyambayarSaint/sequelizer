@@ -3,12 +3,13 @@ const { auth } = require("../middleware/auth")
 
 module.exports = (router) => {
 
-    router.get('/count', newsController.count)
+    router.get('/type/:id', auth, newsController.getNews)
+    router.get('/count', auth, newsController.count)
     router.get('/', newsController.find)
-    router.post('/', newsController.create)
-    router.get('/:id', newsController.findOne)
-    router.put('/:id', newsController.update)
-    router.delete('/:id', newsController.delete)
+    router.post('/', auth, newsController.create)
+    router.get('/:id', auth, newsController.findOne)
+    router.put('/:id', auth, newsController.update)
+    router.delete('/:id', auth, newsController.delete)
 
     return router
 }

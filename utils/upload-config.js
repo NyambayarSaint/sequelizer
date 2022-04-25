@@ -6,5 +6,6 @@ exports.imageMimetypes = [
     'image/jpeg',
     'image/pipeg',
     'image/svg+xml',
-    'image/tiff'
+    'image/tiff',
+    'image/png',
 ]

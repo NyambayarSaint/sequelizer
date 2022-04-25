@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Company)
       this.hasMany(models.User)
       this.hasMany(models.Admin)
+      this.hasMany(models.Post)
     }
   }
   File.init({
@@ -32,7 +33,8 @@ module.exports = (sequelize, DataTypes) => {
     url: DataTypes.STRING,
     originalname: DataTypes.STRING,
     type: DataTypes.STRING,
-    systemPath: DataTypes.STRING
+    systemPath: DataTypes.STRING,
+    createdBy: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'File',

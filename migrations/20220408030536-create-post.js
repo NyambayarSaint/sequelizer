@@ -8,14 +8,8 @@ module.exports = {
         allowNull: false,
         primaryKey: true
       },
-      title: {
-        type: Sequelize.STRING
-      },
       description: {
-        type: Sequelize.STRING
-      },
-      image: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,

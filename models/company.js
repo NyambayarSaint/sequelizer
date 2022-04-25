@@ -13,7 +13,17 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.File)
       this.belongsTo(models.Jobposting)
+
+      this.hasMany(models.User)
+      this.hasMany(models.Admin)
+
       this.hasMany(models.Department)
+      this.hasMany(models.Sector)
+      this.hasMany(models.Unit)
+
+      this.hasMany(models.Folder)
+      this.hasMany(models.News)
+      this.hasMany(models.Event)
     }
   }
   Company.init({
@@ -23,7 +33,16 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       unique: true
     },
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    order: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 10
+    },
+    isShow: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   }, {
     sequelize,
     modelName: 'Company',
