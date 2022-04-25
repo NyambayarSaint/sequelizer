@@ -16,7 +16,7 @@ module.exports = {
         defaultValue: 10,
         allowNull: false
       },
-      order: {
+      isShow: {
         type: Sequelize.BOOLEAN,
         defaultValue: true
       },

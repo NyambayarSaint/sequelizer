@@ -1,9 +1,10 @@
-{
+require('dotenv').config();
+module.exports = {
   "development": {
-    "username": "admin",
-    "password": "nakyXdol!671",
-    "database": "tbconnect",
-    "host": "192.168.10.82",
+    "username": process.env.DB_USERNAME,
+    "password": process.env.DB_PASSWORD,
+    "database": process.env.DB_DATABASE,
+    "host": "localhost",
     "dialect": "postgres"
   },
   "test": {
